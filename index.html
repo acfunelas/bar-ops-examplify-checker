@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examplify Web Checker | PLS Centurion Bar Ops</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        centurion: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            600: '#5b21b6', // Darkened the purple shades
+                            700: '#4c1d95',
+                            800: '#3b0764',
+                            900: '#2e054e', // Deep, regal violet
+                        },
+                        gold: {
+                            500: '#d4af37', // Classic law school gold accent
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-centurion-50 min-h-screen font-sans text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-centurion-900 text-white shadow-xl border-b-4 border-gold-500 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6 py-10 text-center relative z-10">
+            <!-- Logos -->
+            <div class="flex justify-center items-center space-x-6 mb-6">
+                <img src="PLS LOGO.png" alt="PLS Logo" class="h-24 w-auto ">
+            </div>
+            
+            <!-- Subtitle with Icons -->
+            <div class="flex justify-center items-center text-gold-500 font-semibold tracking-widest text-sm mb-3 uppercase">
+                Philippine Law School
+            </div>
+            
+            <h1 class="text-4xl font-extrabold mb-3 tracking-tight">Examplify System Checker</h1>
+            <p class="text-centurion-100 text-lg">PLS Centurion Bar Ops Diagnostic Tool</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 py-10">
+        
+        <!-- Intro Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 text-center">
+            <p class="text-gray-600 mb-6">Click the button below to verify if your current browser and device meet the basic requirements for taking the bar exam via Examplify.</p>
+            <button id="runCheckBtn" onclick="runChecks()" class="bg-centurion-600 hover:bg-centurion-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-colors w-full sm:w-auto">
+                Run System Check
+            </button>
+        </div>
+
+        <!-- Results Area (Hidden initially) -->
+        <div id="resultsArea" class="hidden space-y-4 mb-10">
+            <h2 class="text-2xl font-bold text-gray-800 border-b-2 border-gold-500 pb-2 mb-6 flex items-center">
+                <!-- Gavel Icon -->
+                <svg class="w-7 h-7 mr-3 text-centurion-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 13l-6.5 6.5a2 2 0 0 1-2.828 0l-2.828-2.828a2 2 0 0 1 0-2.828L8.343 7.343"></path>
+                    <path d="M14 13l7.071-7.071a2 2 0 0 0 0-2.828l-2.828-2.828a2 2 0 0 0-2.828 0L8.343 7.343"></path>
+                    <path d="M8.343 7.343l5.657 5.657"></path>
+                </svg>
+                Diagnostic Results
+            </h2>
+            <div id="resultsList" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Javascript will populate this -->
+            </div>
+            
+            <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r text-sm text-yellow-800">
+                <strong>Note on Web Security:</strong> Web browsers cannot safely scan your hard drive space or check your installed applications. You must manually verify the items marked with "Manual Check Required" above.
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-gray-500 text-sm">
+        <p>&copy; 2026 PLS Centurion Bar Ops. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function createResultCard(title, value, status, subtext, semanticIcon, isFullWidth = false) {
+            let bgColor = "bg-white border-gray-200";
+            let statusIcon = "";
+            let valueColor = "";
+            let statusBg = "";
+
+            if (status === "pass") {
+                valueColor = "text-green-700";
+                statusBg = "bg-green-100 text-green-600";
+                statusIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            } else if (status === "fail") {
+                valueColor = "text-red-700";
+                statusBg = "bg-red-100 text-red-600";
+                statusIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            } else {
+                valueColor = "text-yellow-700";
+                bgColor = "bg-yellow-50/50 border-yellow-200";
+                statusBg = "bg-yellow-100 text-yellow-600";
+                statusIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+            }
+
+            return `
+                <div class="${isFullWidth ? 'md:col-span-2' : ''} flex flex-col p-5 border rounded-xl shadow-sm ${bgColor} transition-all hover:shadow-md h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-centurion-100 text-centurion-700 rounded-lg">
+                                ${semanticIcon}
+                            </div>
+                            <h4 class="font-bold text-gray-800">${title}</h4>
+                        </div>
+                        <div class="p-1.5 rounded-full ${statusBg}" title="${status.toUpperCase()}">
+                            ${statusIcon}
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="text-xl font-bold ${valueColor} mb-2">${value}</div>
+                        ${subtext ? `<div class="text-sm text-gray-600 leading-relaxed">${subtext}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function runChecks() {
+            const btn = document.getElementById('runCheckBtn');
+            btn.innerText = "Checking...";
+            btn.disabled = true;
+            btn.classList.add("opacity-75", "cursor-not-allowed");
+
+            setTimeout(() => {
+                const resultsArea = document.getElementById('resultsArea');
+                const resultsList = document.getElementById('resultsList');
+                let html = "";
+
+                // Icons
+                const osIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`;
+                const resIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>`;
+                const ramIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>`;
+                const cpuIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>`;
+                const hdIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>`;
+                const appIcon = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16M8 6h.01M12 6h.01M16 6h.01"></path></svg>`;
+
+                // 1. OS Check
+                const ua = navigator.userAgent;
+                let osName = "Unknown OS";
+                let osStatus = "warning";
+                let isWin = false;
+                let isMac = false;
+                
+                if (ua.indexOf("Win") !== -1) {
+                    osName = "Windows";
+                    osStatus = "pass";
+                    isWin = true;
+                } else if (ua.indexOf("Mac") !== -1) {
+                    osName = "Mac OS";
+                    osStatus = "pass";
+                    isMac = true;
+                } else if (ua.indexOf("Linux") !== -1 || ua.indexOf("X11") !== -1 || ua.indexOf("CrOS") !== -1) {
+                    osName = "Linux / ChromeOS";
+                    osStatus = "fail";
+                }
+
+                html += createResultCard(
+                    "Operating System", 
+                    osName, 
+                    osStatus, 
+                    osStatus === "fail" ? "Examplify does not support Linux or Chromebooks." : "Examplify supports modern versions of this OS.",
+                    osIcon
+                );
+
+                // 2. Screen Resolution
+                const width = window.screen.width;
+                const height = window.screen.height;
+                const resStatus = (width >= 1024 && height >= 768) ? "pass" : "warning";
+                html += createResultCard(
+                    "Screen Resolution", 
+                    `${width} x ${height}`, 
+                    resStatus, 
+                    "1024x768 or higher is recommended to avoid UI wrapping issues.",
+                    resIcon
+                );
+
+                // 3. RAM (Memory)
+                const ram = navigator.deviceMemory;
+                if (ram) {
+                    const ramStatus = ram >= 4 ? "pass" : "warning";
+                    html += createResultCard(
+                        "Estimated RAM", 
+                        `~${ram} GB or more`, 
+                        ramStatus, 
+                        "Minimum 4GB required. Browser APIs can only estimate your RAM.",
+                        ramIcon
+                    );
+                } else {
+                    html += createResultCard(
+                        "Estimated RAM", 
+                        "Unknown", 
+                        "warning", 
+                        "Your browser (e.g., Safari/Firefox) hides RAM details for privacy. Ensure you have at least 4GB.",
+                        ramIcon
+                    );
+                }
+
+                // Processor (Cores)
+                const cores = navigator.hardwareConcurrency;
+                if (cores) {
+                    const coreStatus = cores >= 4 ? "pass" : "warning";
+                    html += createResultCard(
+                        "Processor Cores", 
+                        `${cores} Logical Cores`, 
+                        coreStatus, 
+                        "Browsers can only detect the number of cores, not the specific CPU model.",
+                        cpuIcon
+                    );
+                } else {
+                    html += createResultCard(
+                        "Processor", 
+                        "Unknown", 
+                        "warning", 
+                        "Browser privacy settings prevent detecting your processor details.",
+                        cpuIcon
+                    );
+                }
+
+                // 4. Hard Drive (Interactive/Manual)
+                let hdInstructions = "Please manually verify you have at least 4GB of free storage space before downloading exams.";
+                if (isWin) {
+                    hdInstructions = "<span class='block mt-1 text-gray-700'><strong>How to check on Windows:</strong> Open File Explorer (Win+E) &rarr; Click \"This PC\" &rarr; Look at your \"Local Disk (C:)\" to see available space. You need at least 4GB.</span>";
+                } else if (isMac) {
+                    hdInstructions = "<span class='block mt-1 text-gray-700'><strong>How to check on Mac:</strong> Click the Apple Logo (top left) &rarr; \"System Settings\" (or \"About This Mac\") &rarr; Navigate to \"General > Storage\". You need at least 4GB.</span>";
+                }
+
+                html += createResultCard(
+                    "Free Hard Drive Space", 
+                    "Manual Check Required", 
+                    "warning", 
+                    hdInstructions,
+                    hdIcon,
+                    true // Full width span
+                );
+
+                // 5. Examplify App (Interactive/Manual)
+                let examplifySubtext = `
+                    <span class="block mb-3 text-gray-700">Ensure Examplify is installed and updated. If you need to install or update it, use the link below:</span>
+                    <a href="https://support.examsoft.com/hc/en-us/articles/11146797283469-Examplify-Direct-Download-Links-for-Windows-and-Mac-Installers" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-centurion-800 hover:bg-centurion-900 text-white font-medium py-2 px-5 rounded-lg transition-colors text-sm w-full sm:w-auto shadow-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Get Windows & Mac Installers
+                    </a>
+                `;
+
+                html += createResultCard(
+                    "Examplify Application", 
+                    "Manual Check Required", 
+                    "warning", 
+                    examplifySubtext,
+                    appIcon,
+                    true // Full width span
+                );
+
+                resultsList.innerHTML = html;
+                resultsArea.classList.remove('hidden');
+
+                // Reset button
+                btn.innerText = "Run System Check Again";
+                btn.disabled = false;
+                btn.classList.remove("opacity-75", "cursor-not-allowed");
+
+            }, 600); // Small artificial delay for effect
+        }
+    </script>
+</body>
+</html>
